@@ -1,60 +1,24 @@
+![Group 1](https://github.com/thirdweb-example/thirdweb-auth-express/assets/17715009/06383e68-9c65-4265-8505-e88e573443f9)
 
-![tw-banner](https://github.com/thirdweb-example/next-starter/assets/57885104/20c8ce3b-4e55-4f10-ae03-2fe4743a5ee8)
+# Thirdweb Migrate
 
-# thirdweb-next-starter
+[<img alt="thirdweb SDK" src="https://img.shields.io/npm/v/thirdweb?label=Thirdweb SDK&style=for-the-badge&logo=npm" height="30">](https://www.npmjs.com/package/thirdweb)
+[<img alt="Discord" src="https://img.shields.io/discord/834227967404146718.svg?color=7289da&label=discord&logo=discord&style=for-the-badge" height="30">](https://discord.gg/thirdweb)
 
-Starter template to build an onchain react native app with [thirdweb](https://thirdweb.com/) and [next](https://nextjs.org/).
+This repository contains a collection of examples for migrating other in-app wallet providers to thirdweb. If a provider is missing, please reach out via our [support site](https://thirdweb.com/support).
 
-## Installation
+- [Privy]()
+- [Venly]()
+- Magic _(coming soon)_
+- Dynamic _(coming soon)_
 
-Install the template using [thirdweb create](https://portal.thirdweb.com/cli/create)
+## Documentation
 
-```bash
-  npx thirdweb create app --next
-```
+Check out our in-app wallet documentation to learn more:
 
-## Environment Variables
+-   [In-App Wallets](https://portal.thirdweb.com/connect/in-app-wallet/overview)
+-   [TypeScript SDK](https://portal.thirdweb.com/typescript/v5)
 
-To run this project, you will need to add the following environment variables to your .env file:
+## Support
 
-`CLIENT_ID`
-
-To learn how to create a client ID, refer to the [client documentation](https://portal.thirdweb.com/typescript/v5/client). 
-
-## Run locally
-
-Install dependencies
-
-```bash
-yarn
-```
-
-Start development server
-
-```bash
-yarn dev
-```
-
-Create a production build
-
-```bash
-yarn build
-```
-
-Preview the production build
-
-```bash
-yarn start
-```
-
-## Resources
-
-- [Documentation](https://portal.thirdweb.com/typescript/v5)
-- [Templates](https://thirdweb.com/templates)
-- [YouTube](https://www.youtube.com/c/thirdweb)
-- [Blog](https://blog.thirdweb.com)
-
-## Need help?
-
-For help or feedback, please [visit our support site](https://thirdweb.com/support)
-# migrate
+If you have trouble with this repository, please reach out to us via our [support site](https://thirdweb.com/support).
