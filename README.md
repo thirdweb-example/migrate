@@ -76,6 +76,45 @@ Once a user is connected, we get the user email to be passed to your own Venly a
 
 ### 4. Migrate the assets
 
+Once we have authenticated the user's Venly account, we call the `migrate` function from `/lib/venly/migrate.ts` to initiate the asset migration process. This function performs the following steps:
+
+1. Authenticate the user using their email address.
+2. Initialize the Venly SDK with the provided credentials.
+3. Retrieve the user's Venly wallet.
+4. Iterate through the assets defined in `/config/assets.ts`, excluding native assets initially.
+5. For each asset type (ERC20, ERC721), call the appropriate migration function.
+6. Finally, migrate native assets (e.g., ETH) last to ensure gas fees can be covered.
+
+The migration process handles different asset types:
+
+- **ERC20 Tokens**: 
+  - Check the balance of the token in the Venly wallet.
+  - If the balance is non-zero, transfer the entire balance to the new thirdweb wallet.
+
+- **ERC721 Tokens (NFTs)**:
+  - Retrieve all token IDs owned by the Venly wallet for the specific NFT contract.
+  - For each token ID, initiate a transfer to the new thirdweb wallet.
+
+- **Native Tokens**:
+  - Check the native token balance in the Venly wallet.
+  - Estimate the gas required for the transfer.
+  - Transfer the balance minus the estimated gas (with a 20% buffer) to the new thirdweb wallet.
+
+Important considerations:
+
+1. **Error Handling**: Each migration function includes error handling to log any issues that occur during the process.
+
+2. **Gas Management**: For native token transfers, the function estimates gas and leaves a buffer to ensure the transaction can be completed.
+
+3. **Asynchronous Operations**: The migration process uses async/await to handle multiple asynchronous operations, including balance checks and transfers.
+
+4. **Venly SDK Integration**: The process utilizes Venly's SDK for wallet operations and transfers, ensuring compatibility with the Venly ecosystem.
+
+5. **Flexibility**: The migration process is designed to handle various asset types and can be easily extended to support additional token standards if needed.
+
+After the migration process completes, all supported assets from the user's Venly wallet should be transferred to their new thirdweb wallet. It's important to note that blockchain transactions may take some time to be confirmed, so the assets might not appear immediately in the new wallet.
+
+---
 
 
 ---
