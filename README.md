@@ -1,19 +1,19 @@
 ![Group 1](https://github.com/thirdweb-example/thirdweb-auth-express/assets/17715009/06383e68-9c65-4265-8505-e88e573443f9)
 
-# Migrate Privy Wallets to thirdweb
+# Migrate Venly Wallets to thirdweb
 
 [<img alt="thirdweb SDK" src="https://img.shields.io/npm/v/thirdweb?label=Thirdweb SDK&style=for-the-badge&logo=npm" height="30">](https://www.npmjs.com/package/thirdweb)
 [<img alt="Discord" src="https://img.shields.io/discord/834227967404146718.svg?color=7289da&label=discord&logo=discord&style=for-the-badge" height="30">](https://discord.gg/thirdweb)
 
 ## How to use this repository
 
-This repository is meant to be a starting point from migrating your Privy users to thirdweb's in-app wallets. It should be easy to customize it to fit within your app and provide a smooth migration experience for all users.
+This repository is meant to be a starting point from migrating your Venly users to thirdweb's in-app wallets. It should be easy to customize it to fit within your app and provide a smooth migration experience for all users.
 
 ## Things to know
 
 1. This example involves no interactions with private keys
-2. Privy is a fully locked-in provider, meaning the wallets are not exportable from their system. Instead, we generate a new wallet for each user and migrate the necessary assets.
-3. Because of (2), all users' wallets will need enough native funds to pay for the migration transfers. These funds can be airdropped to users using [Engine](https://thirdweb.com/engine) or another solution, or paid for by the users themselves.
+2. Because Venly provides backend access to wallets, specific implentations vary significantly. We've left certain portions of the logic unimplemented to allow you to customize the migration process to fit your needs. **This example will not work out of the box, it's purely a starting point.**
+3. All users' wallets will need enough native funds to pay for the migration transfers. These funds can be airdropped to users using [Engine](https://thirdweb.com/engine) or another solution, or paid for by the users themselves.
 
 ---
 
@@ -62,18 +62,18 @@ import { ConnectButton } from "@thirdweb-dev/react";
     inAppWallet({
       auth: {
         options: ["email"] 
-	  },
+      },
     }),
   }
 />
 ```
 
-> Note: All the logic going forward is contained within the `PrivyMigration` component in `/app/privy/PrivyMigration.tsx` and the functions found in `/lib/privy/`. This keeps the Privy-specific logic self-contained and easy to integrate into your own app.
+> Note: All the logic going forward is contained within the `VenlyMigration` component in `/app/venly/VenlyMigration.tsx` and the functions found in `/lib/venly/`. This keeps the Venly-specific logic self-contained and easy to integrate into your own app.
+
 ### 2. Check for legacy wallets
 
-Once a user is connected, we use the Privy server SDK to check if there's an existing wallet using that same authentication method.
+Once a user is connected, we get the user email to be passed to your own Venly authentication (to be implemented in `/lib/venly/authenticate.ts`). This allows you to check for an existing user that shares this same email address. If there is a user, migration should be run.
 
-We first use a `useEffect` hook to fetch the user's email address once we detect a thirdweb account is present.
 
 ```tsx
 import { useEffect } from "react";
