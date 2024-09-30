@@ -49,7 +49,7 @@ All assets you'd like to migrate should be added to `/config/assets.ts`. This in
 
 ### 1. Sign in with thirdweb
 
-Users first sign in to their new thirdweb account. Ideally, users should use the same login method as they used to sign in with Privy. This way we can easily identify if they have a legacy (Privy) wallet and which assets need to be migrated. In this example we use the thirdweb [`ConnectButton`](https://portal.thirdweb.com/react/v5/ConnectButton) to handle the login, but you can just as easily [create your own UI](https://portal.thirdweb.com/react/v5/getting-started).
+Users first sign in to their new thirdweb account. Ideally, users should use the same login method as they used to sign in with Venly. This way we can easily identify if they have a legacy (Venly) wallet and which assets need to be migrated. In this example we use the thirdweb [`ConnectButton`](https://portal.thirdweb.com/react/v5/ConnectButton) to handle the login, but you can just as easily [create your own UI](https://portal.thirdweb.com/react/v5/getting-started).
 
 ```tsx
 import { ConnectButton } from "@thirdweb-dev/react";
@@ -78,20 +78,13 @@ Once a user is connected, we get the user email to be passed to your own Venly a
 
 Once we have authenticated the user's Venly account, we call the `migrate` function from `/lib/venly/migrate.ts` to initiate the asset migration process. This function orchestrates the entire migration workflow, starting with user authentication and Venly SDK initialization. It then retrieves the user's Venly wallet and proceeds to migrate assets in a specific order.
 
-The migration process begins by iterating through the assets defined in `/config/assets.ts`, excluding native assets initially. For each asset type (ERC20, ERC721), the appropriate migration function is called. This approach ensures that token assets are transferred before dealing with native assets, which are crucial for covering gas fees.
+The migration process begins by iterating through the assets defined in `/config/assets.ts`, excluding native assets initially so the user has funds for gas. For each asset type (ERC20, ERC721), the appropriate migration function is called.
 
 For ERC20 tokens, the process checks the balance in the Venly wallet. If a non-zero balance is found, the entire amount is transferred to the new thirdweb wallet. ERC721 tokens (NFTs) are handled by first retrieving all token IDs owned by the Venly wallet for the specific NFT contract, then initiating a transfer for each token ID to the new thirdweb wallet.
 
 Native tokens, such as ETH, are migrated last. This step involves checking the native token balance, estimating the required gas for the transfer, and then transferring the balance minus the estimated gas (with a 20% buffer) to ensure the transaction can be completed successfully.
 
-The migration process incorporates several important considerations. Error handling is implemented in each migration function to log any issues that may occur. Gas management is carefully handled, especially for native token transfers, to ensure transactions can be completed. The process leverages async/await for managing multiple asynchronous operations, including balance checks and transfers.
-
-Integration with the Venly SDK is a key aspect of the migration, ensuring compatibility with the Venly ecosystem. The process is designed with flexibility in mind, allowing for easy extension to support additional token standards if needed in the future.
-
-Upon completion of the migration process, all supported assets from the user's Venly wallet should be successfully transferred to their new thirdweb wallet. It's important to note that due to the nature of blockchain transactions, there may be a delay before the assets appear in the new wallet, as transactions require confirmation on the network.
-
----
-
+Upon completion of the migration process, all supported assets from the user's Venly wallet should be successfully transferred to their new thirdweb wallet. It's important to note that the migration does not wait for the transactions to be mined, so there may be a delay before the assets appear in the new wallet.
 
 ---
 
