@@ -8,7 +8,7 @@
 This repository contains a collection of examples for migrating other in-app wallet providers to thirdweb. If a provider is missing, please reach out via our [support site](https://thirdweb.com/support).
 
 - [Privy](https://github.com/thirdweb-example/migrate/tree/privy)
-- [Venly]()
+- [Venly](https://github.com/thirdweb-example/migrate/tree/venly)
 - Magic _(coming soon)_
 - Dynamic _(coming soon)_
 
