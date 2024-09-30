@@ -78,11 +78,74 @@ Once a user is connected, we get the user email to be passed to your own Venly a
 
 Once we have authenticated the user's Venly account, we call the `migrate` function from `/lib/venly/migrate.ts` to initiate the asset migration process. This function orchestrates the entire migration workflow, starting with user authentication and Venly SDK initialization. It then retrieves the user's Venly wallet and proceeds to migrate assets in a specific order.
 
-The migration process begins by iterating through the assets defined in `/config/assets.ts`, excluding native assets initially so the user has funds for gas. For each asset type (ERC20, ERC721), the appropriate migration function is called.
+The migration process begins by iterating through the assets defined in `/config/assets.ts`, excluding native assets initially so the user has funds for gas. For each asset type (ERC20, ERC721), the appropriate migration function is called. Here's a simplified example of how this process works:
 
-For ERC20 tokens, the process checks the balance in the Venly wallet. If a non-zero balance is found, the entire amount is transferred to the new thirdweb wallet. ERC721 tokens (NFTs) are handled by first retrieving all token IDs owned by the Venly wallet for the specific NFT contract, then initiating a transfer for each token ID to the new thirdweb wallet.
+```typescript
+for (const asset of assets.filter((asset) => asset.type !== "NATIVE")) {
+  switch (asset.type) {
+    case "ERC20":
+      migrateERC20(auth, wallet, recipientAddress, asset.address, asset.chain, asset.chainId);
+      break;
+    case "ERC721":
+      migrateERC721(auth, wallet, recipientAddress, asset.address, asset.chain, asset.chainId);
+      break;
+  }
+}
+```
 
-Native tokens, such as ETH, are migrated last. This step involves checking the native token balance, estimating the required gas for the transfer, and then transferring the balance minus the estimated gas (with a 20% buffer) to ensure the transaction can be completed successfully.
+For ERC20 tokens, the process checks the balance in the Venly wallet. If a non-zero balance is found, the entire amount is transferred to the new thirdweb wallet. Here's a simplified version of the ERC20 migration function:
+
+```typescript
+async function migrateERC20(user, wallet, recipient, address, chain, chainId) {
+  const balance = await getBalance(/* ... */);
+  if (balance.value > 0n) {
+    const result = await Venly.Wallet.transferErc20Token({
+      walletFromId: wallet.id,
+      toAddress: recipient,
+      chain,
+      tokenAddress: address,
+      value: Number(balance.value),
+    }, user);
+    return result.data.transactionHash;
+  }
+}
+```
+
+ERC721 tokens (NFTs) are handled by first retrieving all token IDs owned by the Venly wallet for the specific NFT contract, then initiating a transfer for each token ID to the new thirdweb wallet:
+
+```typescript
+async function migrateERC721(user, wallet, recipient, address, chain, chainId) {
+  const tokenIds = await getOwnedErc721TokenIds(/* ... */);
+  const transactions = await Promise.all(tokenIds.map(async (tokenId) => {
+    return (await Venly.Wallet.transferNonFungibleToken({
+      walletFromId: wallet.id,
+      toAddress: recipient,
+      chain,
+      tokenContractAddress: address,
+      tokenId: Number(tokenId),
+    }, user)).data.transactionHash;
+  }));
+  return transactions;
+}
+```
+
+Native tokens, such as ETH, are migrated last. This step involves checking the native token balance, estimating the required gas for the transfer, and then transferring the balance minus the estimated gas (with a 20% buffer) to ensure the transaction can be completed successfully:
+
+```typescript
+async function migrateNative(user, wallet, recipient, chain, chainId) {
+  const balance = await getWalletBalance(/* ... */);
+  if (balance.value > 0n) {
+    const gas = await estimateGas(/* ... */);
+    const result = await Venly.Wallet.transferNativeToken({
+      walletFromId: wallet.id,
+      toAddress: recipient,
+      chain,
+      value: Number(balance.value - (gas * 120n) / 100n), // 20% gas buffer
+    }, user);
+    return result.data.transactionHash;
+  }
+}
+```
 
 Upon completion of the migration process, all supported assets from the user's Venly wallet should be successfully transferred to their new thirdweb wallet. It's important to note that the migration does not wait for the transactions to be mined, so there may be a delay before the assets appear in the new wallet.
 
