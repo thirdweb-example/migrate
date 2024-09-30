@@ -163,7 +163,7 @@ Once we have the account, we call `migrate` from `/lib/privy/migrate.ts` to send
 
 `migrate` will finish before all transactions are mined, so the users won't appear in users' wallets immediately. This is due to limitations with Privy's wallets.
 
-> Privy wallets are build on Ethers 5 and could run into issues sending large amounts of transactions at once. We do some basic nonce management to handle this but if you run into any issues, please reach out to us via our [support site](https://thirdweb.com/support) and we can help resolve them.
+> Privy wallets are built on Ethers 5 and could run into issues sending large amounts of transactions at once. We do some basic nonce management to handle this but if you run into any issues, please reach out to us via our [support site](https://thirdweb.com/support) and we can help resolve them.
 
 Your users assets are now migrated. In the event any transactions fail, the process will repeat the same migration status check whenever they refresh the page and can retry the migration.
 
