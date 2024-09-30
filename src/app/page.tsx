@@ -1,8 +1,8 @@
 "use client";
 import { client } from "@/constants/client";
 import { ConnectButton } from "thirdweb/react";
-import MigratePrivy from "./privy/PrivyMigration";
 import { inAppWallet } from "thirdweb/wallets";
+import MigrateVenly from "@/app/venly/VenlyMigration";
 
 export default function Home() {
 	return (
@@ -18,7 +18,7 @@ export default function Home() {
 						}),
 					]}
 				/>
-				<MigratePrivy />
+				<MigrateVenly />
 			</div>
 		</main>
 	);
